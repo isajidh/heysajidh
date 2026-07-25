@@ -211,17 +211,33 @@ function ProjectCard({ project, index, cardRef, imageRef }: ProjectCardProps) {
       >
         {/* ── Image container — 4:5 aspect, overflow hidden ── */}
         <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl">
-          {/* Parallax image — 120% height for scroll movement */}
+          {/*
+            Parallax layer — GSAP scrub owns this element's `transform`
+            exclusively (writes a new inline value every scroll frame).
+            No CSS `transition` here: a competing CSS transition would
+            re-chase every scrubbed frame, fighting `scrub: true`'s
+            1:1 scroll-tied responsiveness and lagging behind the scroll.
+          */}
           <div
             ref={imageRef}
-            className="work-image absolute inset-0 h-[120%] w-full will-change-transform transition-transform duration-500 ease-out group-hover:scale-105"
+            className="work-image absolute inset-0 h-[120%] w-full will-change-transform"
             style={{ transform: "translateY(0)" }}
           >
-            <ProjectImage hue={project.hue} title={project.title} />
+            {/*
+              Hover-scale layer — deliberately separate from the parallax
+              layer above. GSAP's scrub tween writes inline `transform` on
+              the parent every frame; putting a hover-scale `transform` on
+              that same element would be silently overridden by the
+              inline style (inline style always beats a class rule), so
+              the scale target lives one level down instead.
+            */}
+            <div className="work-image-scale h-full w-full will-change-transform">
+              <ProjectImage hue={project.hue} title={project.title} />
+            </div>
           </div>
 
-          {/* 10% dark overlay — fades on hover */}
-          <div className="work-overlay pointer-events-none absolute inset-0 bg-black/10 transition-opacity duration-500 group-hover:opacity-0" />
+          {/* 10% dark overlay — fades on hover (GSAP-driven, see parent) */}
+          <div className="work-overlay pointer-events-none absolute inset-0 bg-black/10" />
         </div>
 
         {/* ── Card metadata ── */}
@@ -235,7 +251,7 @@ function ProjectCard({ project, index, cardRef, imageRef }: ProjectCardProps) {
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="work-tag inline-flex items-center rounded-full border border-border-divider px-3 py-0.5 text-[0.7rem] font-medium text-text-secondary transition-transform duration-300 group-hover:translate-x-1"
+                  className="work-tag inline-flex items-center rounded-full border border-border-divider px-3 py-0.5 text-[0.7rem] font-medium text-text-secondary"
                 >
                   {tag}
                 </span>
@@ -303,7 +319,7 @@ export default function SelectedWork() {
   );
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const section = sectionRef.current;
       if (!section) return;
 
@@ -367,7 +383,14 @@ export default function SelectedWork() {
         );
       }
 
-      // ── Per-card: scroll entrance + image parallax ──
+      const safe = contextSafe ?? ((fn: () => void) => fn);
+
+      // Native listener cleanups collected here and run in the returned
+      // teardown — addEventListener itself isn't a GSAP object useGSAP
+      // can track, so it needs manual removal like any React effect.
+      const hoverCleanups: Array<() => void> = [];
+
+      // ── Per-card: scroll entrance + image parallax + hover choreography ──
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
 
@@ -384,7 +407,7 @@ export default function SelectedWork() {
           },
         });
 
-        // Inverse image parallax — scrubbed
+        // Inverse image parallax — scrubbed, on the dedicated parallax layer
         const image = imageRefs.current[i];
         if (image) {
           gsap.fromTo(
@@ -402,7 +425,36 @@ export default function SelectedWork() {
             }
           );
         }
+
+        // ── Hover choreography — unified GSAP timeline ──
+        // Scale, overlay fade, and tag shift all fire on the same
+        // timeline so they're genuinely simultaneous (not three CSS
+        // transitions with independently drifting durations).
+        const scaleTarget = card.querySelector<HTMLElement>(".work-image-scale");
+        const overlay = card.querySelector<HTMLElement>(".work-overlay");
+        const tags = card.querySelectorAll<HTMLElement>(".work-tag");
+
+        const handleEnter = safe(() => {
+          gsap.to(scaleTarget, { scale: 1.05, duration: 0.5, ease: "power3.out" });
+          gsap.to(overlay, { opacity: 0, duration: 0.5, ease: "power2.out" });
+          gsap.to(tags, { x: 4, duration: 0.3, ease: "power2.out" });
+        });
+
+        const handleLeave = safe(() => {
+          gsap.to(scaleTarget, { scale: 1, duration: 0.5, ease: "power3.out" });
+          gsap.to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" });
+          gsap.to(tags, { x: 0, duration: 0.3, ease: "power2.out" });
+        });
+
+        card.addEventListener("mouseenter", handleEnter);
+        card.addEventListener("mouseleave", handleLeave);
+        hoverCleanups.push(() => {
+          card.removeEventListener("mouseenter", handleEnter);
+          card.removeEventListener("mouseleave", handleLeave);
+        });
       });
+
+      return () => hoverCleanups.forEach((cleanup) => cleanup());
     },
     { scope: sectionRef }
   );

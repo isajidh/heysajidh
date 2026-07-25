@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -49,6 +49,7 @@ export default function CustomCursor() {
       const dot = cursorDotRef.current;
       const aura = cursorAuraRef.current;
       const label = cursorLabelRef.current;
+      const isViewStateRef = { current: false };
 
       // GSAP quickTo for 60fps cursor tracking
       const dotX = gsap.quickTo(dot, "x", {
@@ -69,7 +70,7 @@ export default function CustomCursor() {
       });
 
       const handleMouseMove = (e: MouseEvent) => {
-        if (dot.style.opacity === "0") {
+        if (!isViewStateRef.current && dot.style.opacity === "0") {
           gsap.to(dot, { opacity: 1, duration: 0.2, ease: "power2.out" });
           gsap.to(aura, { opacity: 0.8, duration: 0.3, ease: "power2.out" });
         }
@@ -80,13 +81,16 @@ export default function CustomCursor() {
       };
 
       const handleMouseEnter = () => {
+        if (isViewStateRef.current) return;
         gsap.to(dot, { opacity: 1, duration: 0.2, ease: "power2.out" });
         gsap.to(aura, { opacity: 0.8, duration: 0.3, ease: "power2.out" });
       };
 
       const handleMouseLeave = () => {
         gsap.to(dot, { opacity: 0, duration: 0.2, ease: "power2.out" });
-        gsap.to(aura, { opacity: 0, duration: 0.3, ease: "power2.out" });
+        if (!isViewStateRef.current) {
+          gsap.to(aura, { opacity: 0, duration: 0.3, ease: "power2.out" });
+        }
       };
 
       // ── Cursor state handler — receives custom events from components ──
@@ -95,6 +99,7 @@ export default function CustomCursor() {
         if (!detail) return;
 
         if (detail.state === "view") {
+          isViewStateRef.current = true;
           // Expand aura, hide dot, show "View" label
           gsap.to(aura, {
             width: 80,
@@ -120,6 +125,7 @@ export default function CustomCursor() {
             });
           }
         } else {
+          isViewStateRef.current = false;
           // Restore default cursor
           gsap.to(aura, {
             width: 32,

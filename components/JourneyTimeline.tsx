@@ -302,7 +302,7 @@ function TimelineNodeCard({
             {/* Horizontal line */}
             <span className="absolute h-px w-2.5 bg-current" />
             {/* Vertical line — rotates away on open */}
-            <span className="accordion-v-line absolute h-2.5 w-px bg-current transition-transform duration-300" />
+            <span className="accordion-v-line absolute h-2.5 w-px bg-current" />
           </span>
         </button>
       </div>

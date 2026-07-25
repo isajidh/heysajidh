@@ -93,6 +93,25 @@
 
 ---
 
+## Phase 2 — Features Implemented
+
+### 7. Hero Section (Hero.tsx)
+- **Date**: 2026-07-16
+- **Status**: ✅ Completed
+- 12-column grid (`grid-cols-12`), min-height `100vh`
+- Left hemisphere (cols 1–7): subtitle, display headline, body copy, "Book a Call" / "About Me" buttons
+- Right hemisphere (cols 8–12): SVG portrait placeholder (4:5 / 800x1000 aspect) + 3 floating badges ("80+ Projects", "Creative", "Reliable")
+- `SplitHeadline` helper: splits headline into per-character `overflow-hidden` spans while preserving word-level `whitespace-nowrap` wrapping (word → char, not flat char split)
+- Character entrance: `translateY(110%) rotate(5deg) opacity:0` → flat/visible, `expo.out` ease, 0.02s stagger, driven by a single master GSAP timeline (`useGSAP`, scoped to the section)
+- Image reveal: `clip-path: inset(0% 48% 0% 48%)` (vertical slit) → `inset(0% 0% 0% 0%)` over 1.5s, synced with an inner `scale: 1.2 → 1`, offset 0.1s after the headline cascade starts (per master timeline)
+- Floating badges: continuous `yoyo: true, repeat: -1, sine.inOut` per-badge float using `gsap.utils.random()` for duration (2–4s) and delay, started after entrance completes
+- Mousemove parallax: `gsap.quickTo` on the portrait image and each badge, moving opposite the cursor relative to the right-hemisphere container center (ref + native `mousemove` listener, no React state)
+- Accessibility: `gsap.matchMedia()` branches on `prefers-reduced-motion` — reduced-motion path sets all elements directly to their final resting state, skipping every stagger/float/parallax tween
+- All animated elements carry `will-change-transform` (Tailwind arbitrary class) or explicit `willChange: "transform"` for GPU compositing
+- `app/page.tsx` now renders `<Hero />` for Section 1 in place of the Phase 1 static placeholder; Sections 2–3 remain as scroll-behavior/cursor testing zones
+
+---
+
 ## Bugs Fixed
 - **Cursor re-render loop**: Original `CustomCursor` used `isVisible` state in `useGSAP` dependencies, causing the animation to re-initialize on every mouse move. Fixed by using refs and GSAP opacity tweens.
 - **Header scroll listener re-registration**: Original `Header` had `isGlass` as a `useGSAP` dependency, causing scroll listeners to unbind/rebind on every glassmorphism toggle. Fixed by using refs for all scroll state.
@@ -101,8 +120,10 @@
 ---
 
 ## Known Issues
-- **Mobile menu**: Hamburger button is present but does not open a drawer yet (Phase 2 scope).
+- **Mobile menu**: Hamburger button is present but does not open a drawer yet (still not addressed in Phase 2).
 - **npm audit**: 12 high severity vulnerabilities inherited from Next.js dependencies (upstream, not actionable).
+- **Portrait placeholder**: `Hero.tsx` uses an inline SVG silhouette (no real asset available) as the 800x1000 placeholder portrait; swap for a real `next/image` asset when creative assets land.
+- **Sandbox verification limits**: `npm run build` / `next dev` fail in this sandbox only because `fonts.googleapis.com` is not on the network allowlist (pre-existing since Phase 1, reproduced on an unmodified clone — not caused by Phase 2 changes). Verified instead via `tsc --noEmit`, `eslint`, and a local dev run with the Google Font import temporarily stubbed out (reverted after verification) — confirmed SSR renders the Hero markup with no hydration/runtime errors and the correct character count (27) in the split headline.
 
 ---
 

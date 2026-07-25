@@ -1,50 +1,13 @@
+import Hero from "@/components/Hero";
+
 export default function Home() {
   return (
     <main
-      id="hero"
       className="relative min-h-[300vh]"
       style={{ backgroundColor: "var(--color-global)" }}
     >
-      {/* ── Section 1: Hero area ── */}
-      <section className="flex min-h-screen flex-col items-start justify-center px-4 md:px-6">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <p
-            className="mb-4 font-medium uppercase tracking-[0.04em] text-text-secondary"
-            style={{ fontSize: "var(--font-size-caption)" }}
-          >
-            Phase 1 — Testing Canvas
-          </p>
-          <h1
-            className="mb-6 font-semibold leading-[1.05] tracking-[-0.02em] text-text-primary"
-            style={{ fontSize: "var(--font-size-display)" }}
-          >
-            Webflow, Applied
-            <br />
-            Differently.
-          </h1>
-          <p
-            className="mb-8 max-w-2xl font-normal leading-[1.5] text-text-secondary"
-            style={{ fontSize: "var(--font-size-body-lg)" }}
-          >
-            Working closely with your team to deliver Webflow builds that merge
-            creativity, technical excellence, and long-term value.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <a
-              href="#"
-              className="inline-flex items-center justify-center rounded-full bg-text-primary px-8 py-3.5 text-[0.9rem] font-medium text-global transition-colors duration-300 hover:bg-[#D4D4D8]"
-            >
-              Book a Call
-            </a>
-            <a
-              href="#about"
-              className="inline-flex items-center justify-center rounded-full border border-border-divider px-8 py-3.5 text-[0.9rem] font-medium text-text-primary transition-colors duration-300 hover:border-text-secondary hover:bg-surface-primary"
-            >
-              About Me
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* ── Section 1: Hero (Phase 2) ── */}
+      <Hero />
 
       {/* ── Section 2: Scroll test zone ── */}
       <section className="flex min-h-screen flex-col items-start justify-center px-4 md:px-6">

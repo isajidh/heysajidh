@@ -11,6 +11,25 @@
 
 ---
 
+## Live Site Analysis
+
+### Design Details Extraction (heynesh_live_site_details.md)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Fetched and parsed full HTML source from heynesh.com
+- Extracted all text content (hero, timeline, portfolio, capabilities, services, testimonials, FAQ, footer)
+- **Critical finding**: Accent color is `#FFFF23` (neon yellow), NOT `#8B5CF6` (purple) as previously estimated
+- Documented complete color palette from live CSS
+- Mapped all GSAP data-attribute animation system (`data-tl-*`, `data-flip-*`)
+- Identified Swiper v11 for testimonials carousel
+- Documented FLIP-based navigation transformation pattern
+- Catalogued all 9 portfolio projects with exact tags and descriptions
+- Documented all 8 FAQ questions with answers
+- Captured all 8 testimonial authors with roles and companies
+- Documented 3 service tiers with exact pricing and bullet points
+
+---
+
 ## Phase 1 — Features Implemented
 
 ### 1. Design System & Tokens (globals.css)

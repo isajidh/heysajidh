@@ -1,6 +1,11 @@
 import Hero from "@/components/Hero";
 import JourneyTimeline from "@/components/JourneyTimeline";
 import SelectedWork from "@/components/SelectedWork";
+import Capabilities from "@/components/Capabilities";
+import Services from "@/components/Services";
+import Testimonials from "@/components/Testimonials";
+import Faq from "@/components/Faq";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -17,14 +22,20 @@ export default function Home() {
       {/* ── Selected Work (Phase 4) ── */}
       <SelectedWork />
 
-      {/* ── Spacer for scroll testing ── */}
-      <section className="flex min-h-[50vh] items-center justify-center px-4 md:px-6">
-        <div className="mx-auto w-full max-w-[1440px] text-center">
-          <p className="text-text-secondary text-sm uppercase tracking-[0.08em]">
-            More sections coming soon
-          </p>
-        </div>
-      </section>
+      {/* ── Capabilities Overview (Phase 5) ── */}
+      <Capabilities />
+
+      {/* ── Services & Pricing (Phase 5) ── */}
+      <Services />
+
+      {/* ── Testimonials (Phase 6) ── */}
+      <Testimonials />
+
+      {/* ── FAQ (Phase 6) ── */}
+      <Faq />
+
+      {/* ── Footer (Phase 6) ── */}
+      <Footer />
     </main>
   );
 }

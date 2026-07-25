@@ -169,6 +169,55 @@
 
 ---
 
+## Phase 5 — Capabilities Overview & Services
+
+### 12. Capabilities Component (Capabilities.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Stacked list of 5 capability items (Webflow Development, Custom Integrations, SEO-Ready Setup, Creative & Interactive Motion, Performance & Technical Optimization).
+- **Line Drawing Entrance**: GSAP `ScrollTrigger` animating `scaleX: 0 → 1` (`transformOrigin: "left center"`) across 1px divider lines for GPU compositing at 60fps.
+- **Text Reveal**: Immediate text entrance `y: 30 → 0` and `opacity: 0 → 1` following line draw.
+- **Hover Interactions**: Title shifts to `text-accent-primary`, right-side description translates `x: 8px` to the right.
+
+### 13. Services Component (Services.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- 3 pricing tiers ("Ongoing Support" $3,000/mo, "Starter Build" $5,000, "Custom Project" Book a Call).
+- 3-column responsive grid (collapses to single-column stack on viewports < 1024px).
+- **Staggered Scroll Entrance**: Sequence 1-2-3 sliding up `y: 60 → 0` with `stagger: 0.15s` on scroll intersection.
+- **Hover Elevation & Glow**: Card elevates `y: -8px` with glowing box-shadow (`shadow-[0_0_35px_rgba(139,92,246,0.18)]`).
+- Full list of deliverables, pricing commitment badges, and audience target footers per tier.
+
+---
+
+## Phase 6 — Testimonials, FAQ, Transform Footer & Final Polish
+
+### 14. Testimonials Drag Carousel (Testimonials.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Horizontal drag-and-throw slider with custom RAF velocity physics & friction lerping.
+- Tension scaling: cards scale down to `0.95` during drag and snap back to `scale: 1` with elastic spring.
+- Hidden scrollbars (`scrollbar-none`).
+- 8 detailed client testimonials with quote, name, role, company, tagline, and 150x150px avatar/logo slot.
+- **Custom Cursor 'Drag' Override**: Dispatches `CustomEvent("cursor-state", { detail: { state: "drag" } })` on mouseenter, updating cursor ring label to "DRAG".
+
+### 15. FAQ Accordion (Faq.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- 8 vertically stacked accordion rows separated by razor-thin horizontal borders.
+- Programmatic height expansion from `height: 0 → scrollHeight` over `0.4s` using GSAP.
+- Right-aligned plus (+) icon that rotates 45° to form "X" when opened.
+
+### 16. Transform Footer Banner (Footer.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Screen-filling section featuring massive typography "Transform Your Webflow Experience Journey".
+- **Scrubbed Scroll Interaction**: GSAP `ScrollTrigger` (`scrub: true`) tracks letter-spacing and scale as user scrolls near document bottom.
+- Intro summary, "Have something in mind? Let's Talk" CTA button, copy-to-clipboard email tooltip, social links, and copyright bar.
+- `prefers-reduced-motion` guards using `gsap.matchMedia()`.
+
+---
+
 ## Phase 4 — Selected Work (Review & Fixes)
 
 ### 12. Review of prior work (commit `b6eb05b`, "Phase 03")

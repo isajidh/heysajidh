@@ -1,0 +1,363 @@
+"use client";
+
+import { useRef, useCallback, useState, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+interface Testimonial {
+  name: string;
+  role: string;
+  company: string;
+  quote: string;
+  tagline: string;
+  hue: number;
+}
+
+const TESTIMONIALS: Testimonial[] = [
+  {
+    name: "Danette Beal",
+    role: "VP of Marketing",
+    company: "Alosant.com",
+    tagline: "Trusted long-term collaborator.",
+    quote:
+      "Nenad has been a fantastic partner to work with and continues to be an essential part of our team. He communicates clearly and promptly, and his work consistently exceeds expectations. He resolves technical challenges quickly and efficiently, always demonstrating skill, reliability, and a strong commitment to quality.",
+    hue: 260,
+  },
+  {
+    name: "Petar Stojakovic",
+    role: "Founder",
+    company: "fiftyseven.co",
+    tagline: "Thinks through the entire experience.",
+    quote:
+      "Nenad doesn't just code Webflow—he thinks through the experience. Motion, pacing, narrative flow: all aligned with technical excellence. The result is sites that feel cohesive, intentional, complete. A true partner in execution. No gaps, no compromises.",
+    hue: 220,
+  },
+  {
+    name: "Klemen Vute",
+    role: "PM",
+    company: "Povio.com",
+    tagline: "Reliable, skilled, and easy to work with.",
+    quote:
+      "Nenad was great to work with! He delivered our websites on time, gave our design team helpful guidance, and suggested smarter solutions that really improved the final results. Super reliable and easy to collaborate with — highly recommend!",
+    hue: 180,
+  },
+  {
+    name: "Johanna Dahlroos",
+    role: "Co-Founder & Creative Director",
+    company: "Moat Agency",
+    tagline: "The details that set him apart.",
+    quote:
+      "I've worked with Nenad for many years, and he still surprises me with the speed and quality of his work. His attention to the small details makes all the difference. He's reliable, fun to collaborate with, and consistently delivers beyond expectations.",
+    hue: 140,
+  },
+  {
+    name: "Marko Ivanovic",
+    role: "Design Lead",
+    company: "Legacy Agency",
+    tagline: "Design-focused, reliable development.",
+    quote:
+      "We've hired Nenad for several projects, and working with him has always been effortless thanks to his deep understanding of design. He's dedicated to perfecting each delivery for our clients.",
+    hue: 40,
+  },
+  {
+    name: "Chrissy Cowdrey",
+    role: "Product/Web Designer",
+    company: "Independent",
+    tagline: "A developer with a true product mindset.",
+    quote:
+      "Nenad is a rare blend of speed, quality, and collaboration. He actively contributes ideas that improve how designs translate into development, and he approaches every build with a product mindset.",
+    hue: 320,
+  },
+  {
+    name: "Marko Ilic",
+    role: "Founder",
+    company: "see.design",
+    tagline: "A proven expert you trust.",
+    quote:
+      "I've been working with Nenad for years and have always been impressed by his work ethic, fast turnaround, and attention to detail. Nenad clearly knows his craft.",
+    hue: 280,
+  },
+  {
+    name: "Bart-Jan Leyts",
+    role: "CEO",
+    company: "Autorank.com",
+    tagline: "Exceptional leadership & ownership.",
+    quote:
+      "We loved working with Nenad on the Autorank website. He showed exceptional leadership throughout the project, taking full ownership of the website infrastructure and guiding key technical decisions.",
+    hue: 200,
+  },
+];
+
+export default function Testimonials() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Drag physics state refs
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const currentXRef = useRef(0);
+  const targetXRef = useRef(0);
+  const velocityRef = useRef(0);
+  const lastMouseXRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const animFrameRef = useRef<number | null>(null);
+
+  const makeCardRef = useCallback(
+    (i: number) => (el: HTMLDivElement | null) => {
+      cardRefs.current[i] = el;
+    },
+    []
+  );
+
+  // Custom RAF lerp for drag & throw physics with friction
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const updatePhysics = () => {
+      if (!isDraggingRef.current) {
+        // Friction glide momentum
+        velocityRef.current *= 0.92;
+        targetXRef.current += velocityRef.current;
+
+        // Boundaries calculation
+        const maxScroll = -(track.scrollWidth - track.clientWidth);
+        if (targetXRef.current > 0) {
+          targetXRef.current = gsap.utils.interpolate(targetXRef.current, 0, 0.2);
+          velocityRef.current = 0;
+        } else if (targetXRef.current < maxScroll) {
+          targetXRef.current = gsap.utils.interpolate(targetXRef.current, maxScroll, 0.2);
+          velocityRef.current = 0;
+        }
+      }
+
+      // Smooth lerping to target X
+      currentXRef.current = gsap.utils.interpolate(
+        currentXRef.current,
+        targetXRef.current,
+        0.15
+      );
+
+      gsap.set(track, { x: currentXRef.current });
+
+      animFrameRef.current = requestAnimationFrame(updatePhysics);
+    };
+
+    animFrameRef.current = requestAnimationFrame(updatePhysics);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, []);
+
+  // Pointer event handlers for drag physics
+  const handlePointerDown = (e: React.PointerEvent) => {
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX - currentXRef.current;
+    lastMouseXRef.current = e.clientX;
+    lastTimeRef.current = performance.now();
+    velocityRef.current = 0;
+
+    // Scale cards down slightly to simulate tension
+    cardRefs.current.forEach((card) => {
+      if (card) {
+        gsap.to(card, { scale: 0.95, duration: 0.3, ease: "power2.out" });
+      }
+    });
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const now = performance.now();
+    const dt = Math.max(now - lastTimeRef.current, 1);
+    const dx = e.clientX - lastMouseXRef.current;
+
+    velocityRef.current = (dx / dt) * 16;
+    lastMouseXRef.current = e.clientX;
+    lastTimeRef.current = now;
+
+    targetXRef.current = e.clientX - startXRef.current;
+  };
+
+  const handlePointerUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+
+    // Elastic snap back to full scale
+    cardRefs.current.forEach((card) => {
+      if (card) {
+        gsap.to(card, { scale: 1, duration: 0.4, ease: "back.out(1.4)" });
+      }
+    });
+  };
+
+  const handleMouseEnter = () => {
+    window.dispatchEvent(
+      new CustomEvent("cursor-state", { detail: { state: "drag" } })
+    );
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    cardRefs.current.forEach((card) => {
+      if (card) {
+        gsap.to(card, { scale: 1, duration: 0.3, ease: "power2.out" });
+      }
+    });
+    window.dispatchEvent(
+      new CustomEvent("cursor-state", { detail: { state: "default" } })
+    );
+  };
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const subtitleEl = section.querySelector(".testi-subtitle");
+      const headingEl = section.querySelector(".testi-heading");
+
+      if (subtitleEl) {
+        gsap.fromTo(
+          subtitleEl,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      if (headingEl) {
+        gsap.fromTo(
+          headingEl,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 78%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+    },
+    { scope: sectionRef }
+  );
+
+  return (
+    <section
+      ref={sectionRef}
+      id="testimonial"
+      className="relative overflow-hidden py-24 md:py-32 lg:py-40"
+    >
+      <div className="mx-auto w-full max-w-[1440px] px-4 md:px-6">
+        {/* ── Section Header ── */}
+        <div className="mb-12 max-w-3xl md:mb-16">
+          <p
+            className="testi-subtitle mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
+            style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+          >
+            TESTIMONIALS
+          </p>
+          <h2
+            className="testi-heading mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
+            style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+          >
+            From People I&apos;ve Worked with
+          </h2>
+        </div>
+      </div>
+
+      {/* ── Horizontal Drag & Throw Carousel Container ── */}
+      <div
+        className="w-full cursor-grab active:cursor-grabbing select-none overflow-hidden touch-pan-y"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div
+          ref={trackRef}
+          className="flex gap-6 px-4 md:px-6 will-change-transform"
+          style={{ width: "max-content" }}
+        >
+          {TESTIMONIALS.map((t, i) => (
+            <div
+              key={t.name}
+              ref={makeCardRef(i)}
+              className="flex w-[340px] md:w-[420px] flex-col justify-between rounded-2xl border border-border-divider bg-surface-primary p-6 md:p-8 transition-colors duration-300 hover:border-accent-primary/40 will-change-transform flex-shrink-0"
+            >
+              <div>
+                {/* Top Quote Tagline */}
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-accent-primary">
+                  {t.tagline}
+                </p>
+
+                {/* Quote Content */}
+                <p className="mb-8 text-sm leading-relaxed text-text-secondary md:text-base">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+              </div>
+
+              {/* Author Info + Avatar/Logo Space (150x150 equivalent scale slot) */}
+              <div className="flex items-center gap-4 border-t border-border-divider/60 pt-6">
+                {/* Avatar SVG Placeholder */}
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-border-divider bg-surface-secondary">
+                  <svg
+                    viewBox="0 0 100 100"
+                    className="h-full w-full"
+                    preserveAspectRatio="xMidYMid slice"
+                  >
+                    <rect
+                      width="100"
+                      height="100"
+                      fill={`hsl(${t.hue}, 30%, 18%)`}
+                    />
+                    <circle
+                      cx="50"
+                      cy="40"
+                      r="20"
+                      fill={`hsl(${t.hue}, 40%, 40%)`}
+                    />
+                    <path
+                      d="M20 90 C20 70 35 60 50 60 C65 60 80 70 80 90 Z"
+                      fill={`hsl(${t.hue}, 40%, 40%)`}
+                    />
+                  </svg>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-text-primary md:text-base">
+                    {t.name}
+                  </h3>
+                  <p className="text-xs text-text-secondary">
+                    {t.role} &bull;{" "}
+                    <span className="text-text-primary/80">{t.company}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

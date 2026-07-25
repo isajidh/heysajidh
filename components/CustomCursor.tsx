@@ -12,6 +12,7 @@ gsap.registerPlugin(useGSAP);
  *
  * Usage from any component:
  *   window.dispatchEvent(new CustomEvent("cursor-state", { detail: { state: "view" } }));
+ *   window.dispatchEvent(new CustomEvent("cursor-state", { detail: { state: "drag" } }));
  *   window.dispatchEvent(new CustomEvent("cursor-state", { detail: { state: "default" } }));
  */
 
@@ -98,9 +99,12 @@ export default function CustomCursor() {
         const detail = (e as CustomEvent).detail;
         if (!detail) return;
 
-        if (detail.state === "view") {
+        if (detail.state === "view" || detail.state === "drag") {
           isViewStateRef.current = true;
-          // Expand aura, hide dot, show "View" label
+          if (label) {
+            label.textContent = detail.state === "drag" ? "Drag" : "View";
+          }
+          // Expand aura, hide dot, show label
           gsap.to(aura, {
             width: 80,
             height: 80,
@@ -188,7 +192,7 @@ export default function CustomCursor() {
           willChange: "transform",
         }}
       />
-      {/* Trailing aura ring — 32px default, expands to 80px on "view" */}
+      {/* Trailing aura ring — 32px default, expands to 80px on "view"/"drag" */}
       <div
         ref={cursorAuraRef}
         style={{
@@ -211,7 +215,7 @@ export default function CustomCursor() {
           justifyContent: "center",
         }}
       >
-        {/* "View" label — hidden by default, appears on project hover */}
+        {/* State label — hidden by default, displays "View" or "Drag" */}
         <span
           ref={cursorLabelRef}
           style={{

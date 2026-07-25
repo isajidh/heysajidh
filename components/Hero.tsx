@@ -92,26 +92,35 @@ export default function Hero() {
             badges ?? [],
             { opacity: 1, scale: 1, duration: 0.6, stagger: 0.12 },
             0.9
-          )
-          .add(startFloating, 1.2);
+          );
 
         // ── Continuous floating physics for badges ──
-        function startFloating() {
-          badges?.forEach((badge) => {
-            gsap.to(badge, {
-              y: gsap.utils.random(-14, -8),
-              duration: gsap.utils.random(2, 4),
-              ease: "sine.inOut",
-              yoyo: true,
-              repeat: -1,
-              delay: gsap.utils.random(0, 1),
-            });
+        // Created synchronously (not via an async timeline callback) so
+        // useGSAP's automatic context revert can find and kill these
+        // infinite (repeat: -1) tweens on unmount/HMR. A tween created
+        // inside a timeline's .add(fn, time) callback fires *during
+        // playback* — after the context-recording window has already
+        // closed — and would otherwise leak/duplicate across reloads.
+        badges?.forEach((badge) => {
+          gsap.to(badge, {
+            y: gsap.utils.random(-12, 12),
+            duration: gsap.utils.random(2, 4),
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            delay: 1.2 + gsap.utils.random(0, 1),
           });
-        }
+        });
 
-        // ── Mousemove parallax on the right hemisphere ──
+        // ── Mousemove parallax across the whole Hero section ──
+        // Attached to the section (not just the right column) so the
+        // portrait/badges react to cursor movement anywhere in the Hero,
+        // per spec — the target reacts even while the cursor is over the
+        // left text column. Offsets are still computed relative to the
+        // right column's own center, since that's the visual target.
+        const heroSection = sectionRef.current;
         const rightCol = rightColRef.current;
-        if (rightCol && imageInnerRef.current) {
+        if (heroSection && rightCol && imageInnerRef.current) {
           const imageX = gsap.quickTo(imageInnerRef.current, "x", {
             duration: 0.6,
             ease: "power3.out",
@@ -140,10 +149,10 @@ export default function Hero() {
             });
           };
 
-          rightCol.addEventListener("mousemove", handleMouseMove);
+          heroSection.addEventListener("mousemove", handleMouseMove);
 
           return () => {
-            rightCol.removeEventListener("mousemove", handleMouseMove);
+            heroSection.removeEventListener("mousemove", handleMouseMove);
           };
         }
       });

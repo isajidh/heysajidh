@@ -6,11 +6,21 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
+/**
+ * Custom cursor events — dispatched by interactive components
+ * to communicate hover state changes to the cursor.
+ *
+ * Usage from any component:
+ *   window.dispatchEvent(new CustomEvent("cursor-state", { detail: { state: "view" } }));
+ *   window.dispatchEvent(new CustomEvent("cursor-state", { detail: { state: "default" } }));
+ */
+
 export default function CustomCursor() {
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorAuraRef = useRef<HTMLDivElement>(null);
+  const cursorLabelRef = useRef<HTMLSpanElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isTouchRef = useRef(true); // assume touch until proven otherwise
+  const isTouchRef = useRef(true);
   const mountedRef = useRef(false);
 
   // Detect touch device — run once on mount, update DOM visibility
@@ -23,7 +33,6 @@ export default function CustomCursor() {
 
     isTouchRef.current = isTouchDevice;
 
-    // Show/hide the container based on touch detection
     if (containerRef.current) {
       containerRef.current.style.display = isTouchDevice ? "none" : "block";
     }
@@ -33,15 +42,15 @@ export default function CustomCursor() {
 
   useGSAP(
     () => {
-      // Wait for mount detection to complete
       if (!mountedRef.current) return;
       if (isTouchRef.current) return;
       if (!cursorDotRef.current || !cursorAuraRef.current) return;
 
       const dot = cursorDotRef.current;
       const aura = cursorAuraRef.current;
+      const label = cursorLabelRef.current;
 
-      // GSAP quickTo for 60fps cursor tracking — no React state involved
+      // GSAP quickTo for 60fps cursor tracking
       const dotX = gsap.quickTo(dot, "x", {
         duration: 0.15,
         ease: "power2.out",
@@ -60,7 +69,6 @@ export default function CustomCursor() {
       });
 
       const handleMouseMove = (e: MouseEvent) => {
-        // Show cursor on first movement (no React re-render)
         if (dot.style.opacity === "0") {
           gsap.to(dot, { opacity: 1, duration: 0.2, ease: "power2.out" });
           gsap.to(aura, { opacity: 0.8, duration: 0.3, ease: "power2.out" });
@@ -81,14 +89,73 @@ export default function CustomCursor() {
         gsap.to(aura, { opacity: 0, duration: 0.3, ease: "power2.out" });
       };
 
+      // ── Cursor state handler — receives custom events from components ──
+      const handleCursorState = (e: Event) => {
+        const detail = (e as CustomEvent).detail;
+        if (!detail) return;
+
+        if (detail.state === "view") {
+          // Expand aura, hide dot, show "View" label
+          gsap.to(aura, {
+            width: 80,
+            height: 80,
+            borderColor: "rgba(245, 245, 247, 0.4)",
+            backgroundColor: "rgba(10, 10, 12, 0.6)",
+            duration: 0.4,
+            ease: "power3.out",
+          });
+          gsap.to(dot, {
+            opacity: 0,
+            scale: 0,
+            duration: 0.2,
+            ease: "power2.out",
+          });
+          if (label) {
+            gsap.to(label, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.3,
+              ease: "power3.out",
+              delay: 0.05,
+            });
+          }
+        } else {
+          // Restore default cursor
+          gsap.to(aura, {
+            width: 32,
+            height: 32,
+            borderColor: "var(--color-text-primary)",
+            backgroundColor: "transparent",
+            duration: 0.35,
+            ease: "power3.out",
+          });
+          gsap.to(dot, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.25,
+            ease: "power2.out",
+          });
+          if (label) {
+            gsap.to(label, {
+              opacity: 0,
+              scale: 0.7,
+              duration: 0.2,
+              ease: "power2.in",
+            });
+          }
+        }
+      };
+
       window.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseenter", handleMouseEnter);
       document.addEventListener("mouseleave", handleMouseLeave);
+      window.addEventListener("cursor-state", handleCursorState);
 
       return () => {
         window.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseenter", handleMouseEnter);
         document.removeEventListener("mouseleave", handleMouseLeave);
+        window.removeEventListener("cursor-state", handleCursorState);
       };
     },
     { scope: containerRef }
@@ -115,7 +182,7 @@ export default function CustomCursor() {
           willChange: "transform",
         }}
       />
-      {/* Trailing aura ring — 32px */}
+      {/* Trailing aura ring — 32px default, expands to 80px on "view" */}
       <div
         ref={cursorAuraRef}
         style={{
@@ -132,9 +199,31 @@ export default function CustomCursor() {
           mixBlendMode: "difference",
           transform: "translate(-50%, -50%)",
           opacity: 0,
-          willChange: "transform",
+          willChange: "transform, width, height",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-      />
+      >
+        {/* "View" label — hidden by default, appears on project hover */}
+        <span
+          ref={cursorLabelRef}
+          style={{
+            fontSize: "0.65rem",
+            fontWeight: 600,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--color-text-primary)",
+            opacity: 0,
+            transform: "scale(0.7)",
+            willChange: "transform, opacity",
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        >
+          View
+        </span>
+      </div>
     </div>
   );
 }

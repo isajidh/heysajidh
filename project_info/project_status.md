@@ -112,6 +112,63 @@
 
 ---
 
+## Phase 3 — About Me & Journey Timeline
+
+### 9. JourneyTimeline Component (JourneyTimeline.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Split-screen 12-column grid: left column (cols 1–4) pinned, right column (cols 5–12) scrolls freely
+- GSAP `ScrollTrigger.create()` pins the left column from `start: "top top"` to `end: "bottom bottom"` of the section
+- **matchMedia guard**: all pinning wrapped in `(min-width: 768px)` — completely disabled on mobile/touch
+- 7 timeline nodes with full content from heynesh.com (2019–2026)
+- Per-node center-viewport intersection via individual ScrollTriggers (`top 65%` / `bottom 35%`)
+- Active node: `opacity: 1`, all others dim to `opacity: 0.25` (0.4s transitions)
+- Image parallax reveal: wrapper `height: 0 → naturalHeight`, inner image `y: -30% → 0%`
+- Image collapse on deactivation: reverse animation with `power2.inOut` ease
+- SVG gradient placeholders (600×400) with unique hue per node and year text overlay
+- Smooth accordion: "Read more" triggers `gsap.to(wrapper, { maxHeight: scrollHeight })` — no CSS `height: auto`
+- Accordion collapse reverses to `maxHeight: 0`, plus icon rotates 90deg to form ×
+- `ScrollTrigger.refresh()` called on accordion open/close to recalculate pin distances
+- Section heading entrance: subtitle, h2, intro paragraph fade up from opacity 0 on scroll
+- Mobile (< 768px): columns stack vertically, images start revealed, nodes fade in with `y: 30` offset
+- All ScrollTrigger instances created inside `useGSAP()` with `matchMedia.revert()` cleanup
+- `page.tsx` updated: Phase 1 test sections removed, `<JourneyTimeline />` placed after `<Hero />`
+- Vertical connector lines between timeline nodes with dot indicators showing year abbreviations
+- Tag badges (@stefan, @webflow, etc.) and time-ago labels per node
+
+---
+
+## Phase 4 — Selected Work
+
+### 10. CustomCursor Upgrade (CustomCursor.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- Added `cursor-state` CustomEvent listener system for cross-component cursor control
+- `state: "view"`: aura expands 32px → 80px, dot hides, "View" label fades in with scale animation
+- `state: "default"`: everything reverses to default sizes
+- Aura gets semi-transparent dark fill (`rgba(10,10,12,0.6)`) in view state for readability
+- Label: 0.65rem, weight 600, uppercase, 0.08em tracking
+- No React state involved — all GSAP-driven, cleaned up via `useGSAP` event listener removal
+
+### 11. SelectedWork Component (SelectedWork.tsx)
+- **Date**: 2026-07-25
+- **Status**: ✅ Completed
+- 9 project cards with exact content from heynesh.com (titles, tags, descriptions)
+- **Staggered zig-zag grid**: 12-column CSS Grid, odd cards cols 1-5 (left), even cards cols 7-12 (right)
+- 4:5 aspect ratio image containers with `overflow: hidden` and `rounded-2xl`
+- SVG gradient placeholders (800×1000) with unique hue per project
+- **10% dark overlay** (`bg-black/10`) that fades to transparent on hover
+- **Inverse image parallax**: images are 120% height, GSAP `scrub: true` ScrollTrigger moves image `y: -10% → 0%` as card traverses viewport
+- `will-change: transform` on all parallax images
+- **Scroll entrance**: each card fades from `opacity: 0, y: 60` → visible at 88% viewport intersection (0.8s, power3.out)
+- **Hover choreography**: image scales 5% via CSS transition, overlay fades, tags translate right 4px, arrow indicator fills white
+- **Cursor override**: dispatches `CustomEvent("cursor-state", { detail: { state: "view" } })` on mouseenter, resets on mouseleave
+- Section heading entrance: subtitle, h2, body paragraph staggered fade-up
+- Callback-ref pattern for 9×2 = 18 dynamic refs (cards + images)
+- `page.tsx` updated: `<SelectedWork />` added after `<JourneyTimeline />`
+
+---
+
 ## Bugs Fixed
 - **Cursor re-render loop**: Original `CustomCursor` used `isVisible` state in `useGSAP` dependencies, causing the animation to re-initialize on every mouse move. Fixed by using refs and GSAP opacity tweens.
 - **Header scroll listener re-registration**: Original `Header` had `isGlass` as a `useGSAP` dependency, causing scroll listeners to unbind/rebind on every glassmorphism toggle. Fixed by using refs for all scroll state.

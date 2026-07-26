@@ -486,9 +486,9 @@ export default function JourneyTimeline() {
       if (headingEl) {
         gsap.fromTo(
           headingEl,
-          { opacity: 0, y: 40 },
+          { autoAlpha: 0, y: 40 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -504,9 +504,9 @@ export default function JourneyTimeline() {
       if (subtitleEl) {
         gsap.fromTo(
           subtitleEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -522,9 +522,9 @@ export default function JourneyTimeline() {
       if (introEl) {
         gsap.fromTo(
           introEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -619,23 +619,20 @@ export default function JourneyTimeline() {
         >
           <div className="md:sticky md:top-0 md:pt-24">
             <p
-              className="journey-subtitle mb-4 font-medium uppercase tracking-[0.04em] text-text-secondary"
-              style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+              className="journey-subtitle reveal-up-sm mb-4 font-medium uppercase tracking-[0.04em] text-text-secondary"
+              style={{ fontSize: "var(--font-size-caption)" }}
             >
               Start small grow big
             </p>
             <h2
-              className="journey-heading mb-6 font-semibold leading-[1.1] tracking-[-0.01em] text-text-primary"
-              style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+              className="journey-heading reveal-up-md mb-6 font-semibold leading-[1.1] tracking-[-0.01em] text-text-primary"
+              style={{ fontSize: "var(--font-size-h2)" }}
             >
               About Me
               <br />
               <span className="text-text-secondary">(&)</span> My Journey
             </h2>
-            <p
-              className="journey-intro max-w-sm leading-[1.6] text-text-secondary"
-              style={{ opacity: 0 }}
-            >
+            <p className="journey-intro reveal-up-sm max-w-sm leading-[1.6] text-text-secondary">
               Seven years ago I opened Webflow for the first time. What happened
               after that is easier to show than explain.
             </p>

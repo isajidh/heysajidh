@@ -128,9 +128,9 @@ export default function Faq() {
       if (subtitleEl) {
         gsap.fromTo(
           subtitleEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -146,9 +146,9 @@ export default function Faq() {
       if (headingEl) {
         gsap.fromTo(
           headingEl,
-          { opacity: 0, y: 40 },
+          { autoAlpha: 0, y: 40 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -174,14 +174,14 @@ export default function Faq() {
         {/* ── Section Header ── */}
         <div className="mb-12 max-w-3xl md:mb-16">
           <p
-            className="faq-subtitle mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
-            style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+            className="faq-subtitle reveal-up-sm mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
+            style={{ fontSize: "var(--font-size-caption)" }}
           >
             FAQ
           </p>
           <h2
-            className="faq-heading mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
-            style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+            className="faq-heading reveal-up-md mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
+            style={{ fontSize: "var(--font-size-h2)" }}
           >
             Got any questions?
           </h2>

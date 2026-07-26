@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.className} antialiased`}>
-      <body className="min-h-screen">
+      <body className="min-h-[100dvh]">
         <SmoothScroll>
           <CustomCursor />
           <Header />

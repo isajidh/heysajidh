@@ -199,8 +199,7 @@ function ProjectCard({ project, index, cardRef, imageRef }: ProjectCardProps) {
   return (
     <div
       ref={cardRef}
-      className={`work-card col-span-12 ${gridClass}`}
-      style={{ opacity: 0, transform: "translateY(60px)" }}
+      className={`work-card reveal-up-lg col-span-12 ${gridClass}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -331,9 +330,9 @@ export default function SelectedWork() {
       if (subtitleEl) {
         gsap.fromTo(
           subtitleEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -349,9 +348,9 @@ export default function SelectedWork() {
       if (headingEl) {
         gsap.fromTo(
           headingEl,
-          { opacity: 0, y: 40 },
+          { autoAlpha: 0, y: 40 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -367,9 +366,9 @@ export default function SelectedWork() {
       if (bodyEl) {
         gsap.fromTo(
           bodyEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -396,7 +395,7 @@ export default function SelectedWork() {
 
         // Card entrance — fade in + translate up
         gsap.to(card, {
-          opacity: 1,
+          autoAlpha: 1,
           y: 0,
           duration: 0.8,
           ease: "power3.out",
@@ -469,22 +468,22 @@ export default function SelectedWork() {
         {/* ── Section header ── */}
         <div className="mb-16 max-w-3xl md:mb-24">
           <p
-            className="work-section-subtitle mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
-            style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+            className="work-section-subtitle reveal-up-sm mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
+            style={{ fontSize: "var(--font-size-caption)" }}
           >
             Selected Work
           </p>
           <h2
-            className="work-section-heading mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
-            style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+            className="work-section-heading reveal-up-md mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
+            style={{ fontSize: "var(--font-size-h2)" }}
           >
             Built in Webflow,
             <br />
             Made to Perform
           </h2>
           <p
-            className="work-section-body max-w-xl leading-[1.6] text-text-secondary"
-            style={{ fontSize: "var(--font-size-body-lg)", opacity: 0 }}
+            className="work-section-body reveal-up-sm max-w-xl leading-[1.6] text-text-secondary"
+            style={{ fontSize: "var(--font-size-body-lg)" }}
           >
             Over seven years I&apos;ve helped businesses across different
             industries turn their ideas into websites that look and work exactly

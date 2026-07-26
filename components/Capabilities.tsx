@@ -78,9 +78,9 @@ export default function Capabilities() {
       if (subtitleEl) {
         gsap.fromTo(
           subtitleEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -96,9 +96,9 @@ export default function Capabilities() {
       if (headingEl) {
         gsap.fromTo(
           headingEl,
-          { opacity: 0, y: 40 },
+          { autoAlpha: 0, y: 40 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -114,9 +114,9 @@ export default function Capabilities() {
       if (bodyEl) {
         gsap.fromTo(
           bodyEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -155,7 +155,7 @@ export default function Capabilities() {
           tl.to(
             content,
             {
-              opacity: 1,
+              autoAlpha: 1,
               y: 0,
               duration: 0.6,
               ease: "power3.out",
@@ -178,20 +178,20 @@ export default function Capabilities() {
         {/* ── Section Header ── */}
         <div className="mb-16 max-w-3xl md:mb-24">
           <p
-            className="capa-section-subtitle mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
-            style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+            className="capa-section-subtitle reveal-up-sm mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
+            style={{ fontSize: "var(--font-size-caption)" }}
           >
             What You Get?
           </p>
           <h2
-            className="capa-section-heading mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
-            style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+            className="capa-section-heading reveal-up-md mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
+            style={{ fontSize: "var(--font-size-h2)" }}
           >
             Capabilities Overview
           </h2>
           <p
-            className="capa-section-body max-w-xl leading-[1.6] text-text-secondary"
-            style={{ fontSize: "var(--font-size-body-lg)", opacity: 0 }}
+            className="capa-section-body reveal-up-sm max-w-xl leading-[1.6] text-text-secondary"
+            style={{ fontSize: "var(--font-size-body-lg)" }}
           >
             Strategy, precision, and development combined — turning your vision
             into a powerful digital experience that feels effortless.
@@ -212,8 +212,7 @@ export default function Capabilities() {
               {/* Content Row */}
               <div
                 ref={makeContentRef(i)}
-                className="grid grid-cols-12 items-center gap-4 py-8 md:py-10 will-change-transform"
-                style={{ opacity: 0, transform: "translateY(30px)" }}
+                className="reveal-up grid grid-cols-12 items-center gap-4 py-8 md:py-10 will-change-transform"
               >
                 {/* Left Column: Number + Title */}
                 <div className="col-span-12 flex items-center gap-4 lg:col-span-5">

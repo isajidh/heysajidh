@@ -76,7 +76,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative flex min-h-screen flex-col justify-between border-t border-border-divider bg-surface-primary pt-24 pb-12 md:pt-32 md:pb-16"
+      className="relative flex min-h-[100dvh] flex-col justify-between border-t border-border-divider bg-surface-primary pt-24 pb-12 md:pt-32 md:pb-16"
     >
       {/* ── Main Banner Content ── */}
       <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 md:px-6">

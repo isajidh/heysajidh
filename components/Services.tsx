@@ -97,9 +97,9 @@ export default function Services() {
       if (subtitleEl) {
         gsap.fromTo(
           subtitleEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -115,9 +115,9 @@ export default function Services() {
       if (headingEl) {
         gsap.fromTo(
           headingEl,
-          { opacity: 0, y: 40 },
+          { autoAlpha: 0, y: 40 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -133,9 +133,9 @@ export default function Services() {
       if (bodyEl) {
         gsap.fromTo(
           bodyEl,
-          { opacity: 0, y: 20 },
+          { autoAlpha: 0, y: 20 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.6,
             ease: "power3.out",
@@ -154,9 +154,9 @@ export default function Services() {
       if (validCards.length > 0) {
         gsap.fromTo(
           validCards,
-          { opacity: 0, y: 60 },
+          { autoAlpha: 0, y: 60 },
           {
-            opacity: 1,
+            autoAlpha: 1,
             y: 0,
             duration: 0.8,
             ease: "power3.out",
@@ -183,20 +183,20 @@ export default function Services() {
         {/* ── Section Header ── */}
         <div className="mb-16 max-w-3xl md:mb-24">
           <p
-            className="services-section-subtitle mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
-            style={{ fontSize: "var(--font-size-caption)", opacity: 0 }}
+            className="services-section-subtitle reveal-up-sm mb-4 font-medium uppercase tracking-[0.08em] text-text-secondary"
+            style={{ fontSize: "var(--font-size-caption)" }}
           >
             SERVICES
           </p>
           <h2
-            className="services-section-heading mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
-            style={{ fontSize: "var(--font-size-h2)", opacity: 0 }}
+            className="services-section-heading reveal-up-md mb-6 font-semibold leading-[1.08] tracking-[-0.01em] text-text-primary"
+            style={{ fontSize: "var(--font-size-h2)" }}
           >
             Solutions That Deliver
           </h2>
           <p
-            className="services-section-body max-w-xl leading-[1.6] text-text-secondary"
-            style={{ fontSize: "var(--font-size-body-lg)", opacity: 0 }}
+            className="services-section-body reveal-up-sm max-w-xl leading-[1.6] text-text-secondary"
+            style={{ fontSize: "var(--font-size-body-lg)" }}
           >
             Same quality, same attention to detail. The only difference is the size of the project and what you need right now.
           </p>
@@ -208,12 +208,11 @@ export default function Services() {
             <div
               key={tier.title}
               ref={makeCardRef(i)}
-              className={`group relative flex flex-col justify-between rounded-2xl border p-8 bg-surface-primary transition-all duration-400 ease-out will-change-transform ${
+              className={`reveal-up-lg group relative flex flex-col justify-between rounded-2xl border p-8 bg-surface-primary transition-all duration-400 ease-out will-change-transform ${
                 tier.highlighted
                   ? "border-accent-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.12)]"
                   : "border-border-divider hover:border-accent-primary/40"
               } hover:-translate-y-2 hover:shadow-[0_0_35px_rgba(139,92,246,0.18)]`}
-              style={{ opacity: 0, transform: "translateY(60px)" }}
             >
               <div>
                 {/* Header Row: Title */}

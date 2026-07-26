@@ -67,14 +67,14 @@ export default function Hero() {
         // ── Master entrance timeline ──
         const tl = gsap.timeline({ defaults: { ease: "expo.out" }, delay: 0.3 });
 
-        tl.to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.7 }, 0)
+        tl.to(subtitleRef.current, { autoAlpha: 1, y: 0, duration: 0.7 }, 0)
           .to(
             chars ?? [],
             { y: "0%", rotate: 0, opacity: 1, duration: 0.9, stagger: 0.02 },
             0.1 // staggered 0.1s from timeline start, in sync with image reveal below
           )
-          .to(bodyRef.current, { opacity: 1, y: 0, duration: 0.7 }, 0.35)
-          .to(buttonsRef.current, { opacity: 1, y: 0, duration: 0.6 }, 0.45)
+          .to(bodyRef.current, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.35)
+          .to(buttonsRef.current, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.45)
           // Image clip-path reveal — narrow vertical slit expanding outward
           .fromTo(
             imageClipRef.current,
@@ -162,7 +162,7 @@ export default function Hero() {
         gsap.set(chars ?? [], { y: "0%", rotate: 0, opacity: 1 });
         gsap.set(
           [subtitleRef.current, bodyRef.current, buttonsRef.current],
-          { opacity: 1, y: 0 }
+          { autoAlpha: 1, y: 0 }
         );
         gsap.set(imageClipRef.current, { clipPath: "inset(0% 0% 0% 0%)" });
         gsap.set(imageInnerRef.current, { scale: 1 });
@@ -181,15 +181,15 @@ export default function Hero() {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative flex min-h-screen w-full items-center overflow-hidden px-4 pt-32 pb-16 md:px-6"
+      className="relative flex min-h-[100dvh] w-full items-center overflow-hidden px-4 pt-32 pb-16 md:px-6"
     >
       <div className="mx-auto grid w-full max-w-[1440px] grid-cols-12 gap-6">
         {/* ── Left Hemisphere: Typographic block (cols 1–7) ── */}
         <div className="relative z-10 col-span-12 flex flex-col items-start justify-center lg:col-span-7">
           <p
             ref={subtitleRef}
-            className="mb-4 font-medium uppercase tracking-[0.04em] text-text-secondary will-change-transform"
-            style={{ fontSize: "var(--font-size-caption)", opacity: 0, transform: "translateY(20px)" }}
+            className="reveal-up-sm mb-4 font-medium uppercase tracking-[0.04em] text-text-secondary will-change-transform"
+            style={{ fontSize: "var(--font-size-caption)" }}
           >
             The Webflow Expert. That&apos;s Nenad.
           </p>
@@ -204,8 +204,8 @@ export default function Hero() {
 
           <p
             ref={bodyRef}
-            className="mb-8 max-w-2xl font-normal leading-[1.5] text-text-secondary will-change-transform"
-            style={{ fontSize: "var(--font-size-body-lg)", opacity: 0, transform: "translateY(20px)" }}
+            className="reveal-up-sm mb-8 max-w-2xl font-normal leading-[1.5] text-text-secondary will-change-transform"
+            style={{ fontSize: "var(--font-size-body-lg)" }}
           >
             Working closely with your team to deliver Webflow builds that merge
             creativity, technical excellence, and long-term value.
@@ -213,8 +213,7 @@ export default function Hero() {
 
           <div
             ref={buttonsRef}
-            className="flex flex-wrap gap-4 will-change-transform"
-            style={{ opacity: 0, transform: "translateY(20px)" }}
+            className="reveal-up-sm flex flex-wrap gap-4 will-change-transform"
           >
             <a
               href="#"

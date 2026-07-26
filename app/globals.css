@@ -26,6 +26,18 @@
 
   /* --- Container --- */
   --container-max-width-default: 1440px;
+
+  /* --- Breakpoints (synced to Webflow's native media queries) ---
+     Tailwind v4 has no tailwind.config.ts; screens are theme tokens.
+     Webflow's desktop/tablet/mobile-landscape cutoffs sit a few px
+     below Tailwind's defaults (1024/768/640), so content built to
+     Webflow's grid was reflowing into the wrong layout on real
+     devices near those boundaries (e.g. iPad Pro landscape at
+     1024px hitting Tailwind's lg but not Webflow's 991px one). */
+  --breakpoint-sm: 479px;
+  --breakpoint-md: 767px;
+  --breakpoint-lg: 991px;
+  --breakpoint-xl: 1440px;
 }
 
 /* ============================================
@@ -67,6 +79,49 @@ html.lenis body {
 }
 
 /* ============================================
+   GSAP FOUC & CLS PREVENTION
+   Pre-animation states, defined here rather than
+   via JS/inline styles, so entrance-animated
+   content starts invisible AND out of the a11y
+   tree (visibility:hidden) before hydration —
+   not just visually transparent via opacity alone,
+   which would leave it focusable/announced early.
+   Paired GSAP tweens animate `autoAlpha` (which
+   toggles visibility + opacity together), not
+   `opacity` alone — required, since animating
+   opacity without touching visibility would leave
+   the element permanently out of the a11y tree.
+   ============================================ */
+.reveal {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.reveal-up-sm {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.reveal-up {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.reveal-up-md {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.reveal-up-lg {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(60px);
+}
+
+/* ============================================
    BASE RESETS & GLOBAL STYLES
    ============================================ */
 *,
@@ -94,7 +149,7 @@ body {
 /* ============================================
    CUSTOM CURSOR — Hide OS cursor on desktop
    ============================================ */
-@media (min-width: 768px) and (pointer: fine) {
+@media (min-width: 767px) and (pointer: fine) {
   html,
   html * {
     cursor: none !important;

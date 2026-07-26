@@ -426,9 +426,10 @@ export default function SelectedWork() {
         }
 
         // ── Hover choreography — unified GSAP timeline ──
-        // Scale, overlay fade, and tag shift all fire on the same
-        // timeline so they're genuinely simultaneous (not three CSS
-        // transitions with independently drifting durations).
+        // Scale, overlay fade, and tag shift all fire from the same
+        // event (not three CSS transitions with independently drifting
+        // durations) — tags stagger slightly among themselves for a
+        // subtle cascade rather than snapping over as one block.
         const scaleTarget = card.querySelector<HTMLElement>(".work-image-scale");
         const overlay = card.querySelector<HTMLElement>(".work-overlay");
         const tags = card.querySelectorAll<HTMLElement>(".work-tag");
@@ -436,13 +437,13 @@ export default function SelectedWork() {
         const handleEnter = safe(() => {
           gsap.to(scaleTarget, { scale: 1.05, duration: 0.5, ease: "power3.out" });
           gsap.to(overlay, { opacity: 0, duration: 0.5, ease: "power2.out" });
-          gsap.to(tags, { x: 4, duration: 0.3, ease: "power2.out" });
+          gsap.to(tags, { x: 4, duration: 0.3, ease: "power2.out", stagger: 0.05 });
         });
 
         const handleLeave = safe(() => {
           gsap.to(scaleTarget, { scale: 1, duration: 0.5, ease: "power3.out" });
           gsap.to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" });
-          gsap.to(tags, { x: 0, duration: 0.3, ease: "power2.out" });
+          gsap.to(tags, { x: 0, duration: 0.3, ease: "power2.out", stagger: 0.05 });
         });
 
         card.addEventListener("mouseenter", handleEnter);

@@ -417,16 +417,20 @@ export default function JourneyTimeline() {
       const mm = gsap.matchMedia();
 
       // ══════════════════════════════════════
-      // DESKTOP (≥ 768px) — Pin + intersection
+      // DESKTOP (≥ 767px) — Pin + intersection
       // ══════════════════════════════════════
-      mm.add("(min-width: 768px)", () => {
+      mm.add("(min-width: 767px)", () => {
         // ── Pin the left column ──
+        // refreshPriority ensures this recalculates before triggers
+        // further down the page — this pin's start/end affects the
+        // layout those triggers measure against.
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
           end: "bottom bottom",
           pin: leftCol,
           pinSpacing: false,
+          refreshPriority: 1,
         });
 
         // ── Per-node intersection triggers ──
@@ -446,9 +450,9 @@ export default function JourneyTimeline() {
       });
 
       // ══════════════════════════════════════
-      // MOBILE (< 768px) — Simple opacity reveals
+      // MOBILE (< 767px) — Simple opacity reveals
       // ══════════════════════════════════════
-      mm.add("(max-width: 767.98px)", () => {
+      mm.add("(max-width: 766.98px)", () => {
         nodeRefs.current.forEach((node, i) => {
           if (!node) return;
 

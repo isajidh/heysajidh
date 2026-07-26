@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+gsap.registerPlugin(ScrollTrigger, Draggable, InertiaPlugin, useGSAP);
 
 interface Testimonial {
   name: string;
@@ -93,18 +95,10 @@ const TESTIMONIALS: Testimonial[] = [
 
 export default function Testimonials() {
   const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Drag physics state refs
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const currentXRef = useRef(0);
-  const targetXRef = useRef(0);
-  const velocityRef = useRef(0);
-  const lastMouseXRef = useRef(0);
-  const lastTimeRef = useRef(0);
-  const animFrameRef = useRef<number | null>(null);
+  const draggableRef = useRef<Draggable | null>(null);
 
   const makeCardRef = useCallback(
     (i: number) => (el: HTMLDivElement | null) => {
@@ -113,88 +107,6 @@ export default function Testimonials() {
     []
   );
 
-  // Custom RAF lerp for drag & throw physics with friction
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-
-    const updatePhysics = () => {
-      if (!isDraggingRef.current) {
-        // Friction glide momentum
-        velocityRef.current *= 0.92;
-        targetXRef.current += velocityRef.current;
-
-        // Boundaries calculation
-        const maxScroll = -(track.scrollWidth - track.clientWidth);
-        if (targetXRef.current > 0) {
-          targetXRef.current = gsap.utils.interpolate(targetXRef.current, 0, 0.2);
-          velocityRef.current = 0;
-        } else if (targetXRef.current < maxScroll) {
-          targetXRef.current = gsap.utils.interpolate(targetXRef.current, maxScroll, 0.2);
-          velocityRef.current = 0;
-        }
-      }
-
-      // Smooth lerping to target X
-      currentXRef.current = gsap.utils.interpolate(
-        currentXRef.current,
-        targetXRef.current,
-        0.15
-      );
-
-      gsap.set(track, { x: currentXRef.current });
-
-      animFrameRef.current = requestAnimationFrame(updatePhysics);
-    };
-
-    animFrameRef.current = requestAnimationFrame(updatePhysics);
-
-    return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    };
-  }, []);
-
-  // Pointer event handlers for drag physics
-  const handlePointerDown = (e: React.PointerEvent) => {
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX - currentXRef.current;
-    lastMouseXRef.current = e.clientX;
-    lastTimeRef.current = performance.now();
-    velocityRef.current = 0;
-
-    // Scale cards down slightly to simulate tension
-    cardRefs.current.forEach((card) => {
-      if (card) {
-        gsap.to(card, { scale: 0.95, duration: 0.3, ease: "power2.out" });
-      }
-    });
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
-    const now = performance.now();
-    const dt = Math.max(now - lastTimeRef.current, 1);
-    const dx = e.clientX - lastMouseXRef.current;
-
-    velocityRef.current = (dx / dt) * 16;
-    lastMouseXRef.current = e.clientX;
-    lastTimeRef.current = now;
-
-    targetXRef.current = e.clientX - startXRef.current;
-  };
-
-  const handlePointerUp = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-
-    // Elastic snap back to full scale
-    cardRefs.current.forEach((card) => {
-      if (card) {
-        gsap.to(card, { scale: 1, duration: 0.4, ease: "back.out(1.4)" });
-      }
-    });
-  };
-
   const handleMouseEnter = () => {
     window.dispatchEvent(
       new CustomEvent("cursor-state", { detail: { state: "drag" } })
@@ -202,12 +114,6 @@ export default function Testimonials() {
   };
 
   const handleMouseLeave = () => {
-    isDraggingRef.current = false;
-    cardRefs.current.forEach((card) => {
-      if (card) {
-        gsap.to(card, { scale: 1, duration: 0.3, ease: "power2.out" });
-      }
-    });
     window.dispatchEvent(
       new CustomEvent("cursor-state", { detail: { state: "default" } })
     );
@@ -216,7 +122,9 @@ export default function Testimonials() {
   useGSAP(
     () => {
       const section = sectionRef.current;
-      if (!section) return;
+      const track = trackRef.current;
+      const container = containerRef.current;
+      if (!section || !track || !container) return;
 
       const subtitleEl = section.querySelector(".testi-subtitle");
       const headingEl = section.querySelector(".testi-heading");
@@ -256,6 +164,48 @@ export default function Testimonials() {
           }
         );
       }
+
+      // ── Drag & throw carousel — GSAP Draggable + InertiaPlugin ──
+      const [instance] = Draggable.create(track, {
+        type: "x",
+        inertia: true,
+        bounds: container,
+        edgeResistance: 0.65,
+        cursor: "grab",
+        activeCursor: "grabbing",
+        onPress: function () {
+          gsap.to(cardRefs.current.filter(Boolean), {
+            scale: 0.95,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        },
+        onRelease: function () {
+          gsap.to(cardRefs.current.filter(Boolean), {
+            scale: 1,
+            duration: 0.4,
+            ease: "back.out(1.4)",
+          });
+        },
+        onDragStart: function () {
+          // Prevent text selection on the testimonial quotes while
+          // actively dragging the track.
+          track.classList.add("is-dragging");
+        },
+        onDragEnd: function () {
+          track.classList.remove("is-dragging");
+        },
+      });
+      draggableRef.current = instance;
+
+      // Bounds depend on the track's natural width vs the container —
+      // both can change on resize/orientation change.
+      const handleResize = () => draggableRef.current?.applyBounds(container);
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
     },
     { scope: sectionRef }
   );
@@ -286,11 +236,8 @@ export default function Testimonials() {
 
       {/* ── Horizontal Drag & Throw Carousel Container ── */}
       <div
-        className="w-full cursor-grab active:cursor-grabbing select-none overflow-hidden touch-pan-y"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        ref={containerRef}
+        className="w-full cursor-grab active:cursor-grabbing overflow-hidden touch-pan-y"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

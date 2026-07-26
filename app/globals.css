@@ -121,6 +121,13 @@ html.lenis body {
   transform: translateY(60px);
 }
 
+/* Toggled on the testimonial track during Draggable's onDragStart/
+   onDragEnd — prevents the quote text from being selected mid-drag. */
+.is-dragging,
+.is-dragging * {
+  user-select: none;
+}
+
 /* ============================================
    BASE RESETS & GLOBAL STYLES
    ============================================ */

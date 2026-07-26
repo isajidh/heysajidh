@@ -30,7 +30,7 @@ export default function CustomCursor() {
       "ontouchstart" in window ||
       navigator.maxTouchPoints > 0 ||
       window.matchMedia("(pointer: coarse)").matches ||
-      window.innerWidth < 768;
+      window.innerWidth < 767;
 
     isTouchRef.current = isTouchDevice;
 
